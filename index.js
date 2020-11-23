@@ -148,8 +148,8 @@ var BRAILLE = {
       ' ⠢ ': ' enough ',
       ' ⠏ ': ' people ',
       ' ⠗ ': ' rather ',
-      ' ⠡': ' child',
-      ' ⠑': ' every',
+      ' ⠡': 'child ',
+      ' ⠑': 'every ',
       ' ⠟ ': ' quite ',
       ' ⠩ ': ' shall ',
       ' ⠌ ': ' still ',
@@ -222,6 +222,29 @@ var replaceContractions = function (text) {
     return text;
 };
 
+var markCapitals = function (text) {
+  return text.replace(/([A-Z])/g, "⠠$1").toLowerCase();
+}
+
+var toBraille = function (text) {
+    text = markCapitals(text);
+    text = replaceContractions(text);
+    var upperText, upperTextLength, brailleText, i;
+
+    upperText = text.toUpperCase();
+    upperTextLength = upperText.length;
+    brailleText = '';
+
+    for (i = 0; i < upperTextLength; i++) {
+        var character = upperText[i]
+        brailleText += isConverted(character)
+            ? character
+            : this.convert(character);
+    }
+
+    return brailleText;
+};
+
 module.exports = {
     convert: function (character) {
         return !!BRAILLE[character] ? BRAILLE[character] : '?';
@@ -231,23 +254,7 @@ module.exports = {
         return !!ASCII[symbol] ? ASCII[symbol] : '?';
     },
 
-    toBraille: function (text) {
-        text = replaceContractions(text);
-        var upperText, upperTextLength, brailleText, i;
-
-        upperText = text.toUpperCase();
-        upperTextLength = upperText.length;
-        brailleText = '';
-
-        for (i = 0; i < upperTextLength; i++) {
-            var character = upperText[i]
-            brailleText += isConverted(character)
-                ? character
-                : this.convert(character);
-        }
-
-        return brailleText;
-    },
+    toBraille: toBraille,
 
     toText: function (code) {
         var codeLength, asciiText, i;
