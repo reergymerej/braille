@@ -249,7 +249,7 @@ var toBraille = function (text) {
             ? character
             : convert(character);
     }
-
+    console.log(brailleText);
     return brailleText;
 };
 
