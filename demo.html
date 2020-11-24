@@ -8,12 +8,13 @@
   <script>
     function update(){
       toBraille(document.getElementById("input").value)
+      document.getElementById("output").innerText = toBraille(document.getElementById("input").value)
     }
   </script>
   <title>English Braille Generator</title>
 </head>
 <body>
-<input id="input" name="input"  type="text" onchange="update()"> </input>
-<div id="output"></div>
+<input id="input" name="input"  type="text" onkeyup="update()"> </input>
+<span id="output"></span>
 </body>
 </html>
