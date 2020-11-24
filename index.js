@@ -226,11 +226,19 @@ var markCapitals = function (text) {
   return text.replace(/([A-Z])/g, "⠠$1").toLowerCase();
 }
 
-var toBraille = function (text) {
-    text = markCapitals(text);
-    text = replaceContractions(text);
-    var upperText, upperTextLength, brailleText, i;
+var markNumerals = function (text) {
+  return text.replace(/(\d+)/g, "⠼$1").toLowerCase();
+}
 
+var convert = function (character) {
+    return !!BRAILLE[character] ? BRAILLE[character] : '?';
+};
+
+var toBraille = function (text) {
+  var upperText, upperTextLength, brailleText, i;
+    text = markCapitals(text);
+    text = markNumerals(text);
+    text = replaceContractions(text);
     upperText = text.toUpperCase();
     upperTextLength = upperText.length;
     brailleText = '';
@@ -239,16 +247,14 @@ var toBraille = function (text) {
         var character = upperText[i]
         brailleText += isConverted(character)
             ? character
-            : this.convert(character);
+            : convert(character);
     }
 
     return brailleText;
 };
 
 module.exports = {
-    convert: function (character) {
-        return !!BRAILLE[character] ? BRAILLE[character] : '?';
-    },
+    convert: convert,
 
     read: function (symbol) {
         return !!ASCII[symbol] ? ASCII[symbol] : '?';
