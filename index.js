@@ -31,16 +31,16 @@ var BRAILLE = {
         '<': '⠣',
         '>': '⠜',
         '$': '⠫',
-        '0': '⠴',
-        '1': '⠂',
-        '2': '⠆',
-        '3': '⠒',
-        '4': '⠲',
-        '5': '⠢',
+        '0': '⠚',
+        '1': '⠁',
+        '2': '⠃',
+        '3': '⠉',
+        '4': '⠙',
+        '5': '⠑',
         '6': '⠋',
-        '7': '⠶',
-        '8': '⠦',
-        '9': '⠔',
+        '7': '⠛',
+        '8': '⠓',
+        '9': '⠊',
         'A': '⠁',
         'B': '⠃',
         'C': '⠉',
@@ -138,15 +138,71 @@ var BRAILLE = {
         '⠼': '#',
         '⠽': 'Y',
         '⠾': ')',
-        '⠿': '=',
+        '⠿': '='
     },
 
     CONTRACTIONS = {
-        '⠮': 'the',
-        '⠿': 'for',
-        '⠯': 'and',
-        '⠫': 'ed',
-        '⠬': 'ing',
+      // spacing in intentional. ' wholeWord ' , ' wholeWordOrPrefix', 'contraction'
+      // best if sorted by pattern length (desc).
+      ' ⠅ ': ' knowledge ',
+      ' ⠢ ': ' enough ',
+      ' ⠏ ': ' people ',
+      ' ⠗ ': ' rather ',
+      ' ⠡': 'child ',
+      ' ⠑': 'every ',
+      ' ⠟ ': ' quite ',
+      ' ⠩ ': ' shall ',
+      ' ⠌ ': ' still ',
+      ' ⠱ ': ' which ',
+      ' ⠋ ': ' from ',
+      ' ⠚ ': ' just ',
+      ' ⠇ ': ' like ',
+      ' ⠍ ': ' more ',
+      ' ⠞ ': ' that ',
+      ' ⠹ ': ' this ',
+      ' ⠧ ': ' very ',
+      ' ⠶ ': ' were ',
+      ' ⠾ ': ' with ',
+      ' ⠯ ': ' and ',
+      ' ⠃ ': ' but ',
+      ' ⠉ ': ' can ',
+      '⠤': 'com',
+      '⠒': 'con',
+      '⠲': 'dis',
+      '⠿': 'for',
+      '⠬': 'ing',
+      ' ⠝ ': ' not ',
+      '⠳': 'out',
+      '⠮': 'the',
+      '⠴': 'was',
+      ' ⠽ ': ' you ',
+      '⠜': 'ar',
+      ' ⠵ ': ' as ',
+      '⠴': 'by',
+      '⠒': 'cc',
+      '⠡': 'ch',
+      '⠲': 'dd',
+      ' ⠙ ': ' do ',
+      '⠂': 'ea',
+      '⠫': 'ed',
+      '⠢': 'en',
+      '⠻': 'er',
+      '⠖': 'ff',
+      '⠶': 'gg',
+      '⠣': 'gh',
+      ' ⠛ ': ' go ',
+      '⠔': 'in',
+      ' ⠭ ': ' it ',
+      '⠷': 'of',
+      '⠳': 'ou',
+      '⠪': 'ow',
+      '⠩': 'sh',
+      ' ⠎ ': ' so ',
+      '⠌': 'st',
+      '⠹': 'th',
+      '⠖': 'to',
+      ' ⠥ ': ' us ',
+      '⠱': 'wh'
     };
 
 Object.assign(ASCII, CONTRACTIONS)
@@ -166,32 +222,45 @@ var replaceContractions = function (text) {
     return text;
 };
 
+var markCapitals = function (text) {
+  return text.replace(/([A-Z])/g, "⠠$1").toLowerCase();
+}
+
+var markNumerals = function (text) {
+  return text.replace(/(\d+)/g, "⠼$1").toLowerCase();
+}
+
+var convert = function (character) {
+    return !!BRAILLE[character] ? BRAILLE[character] : '?';
+};
+
+var toBraille = function (text) {
+  var upperText, upperTextLength, brailleText, i;
+    text = markCapitals(text);
+    text = markNumerals(text);
+    text = replaceContractions(text);
+    upperText = text.toUpperCase();
+    upperTextLength = upperText.length;
+    brailleText = '';
+
+    for (i = 0; i < upperTextLength; i++) {
+        var character = upperText[i]
+        brailleText += isConverted(character)
+            ? character
+            : convert(character);
+    }
+    console.log(brailleText);
+    return brailleText;
+};
+
 module.exports = {
-    convert: function (character) {
-        return !!BRAILLE[character] ? BRAILLE[character] : '?';
-    },
+    convert: convert,
 
     read: function (symbol) {
         return !!ASCII[symbol] ? ASCII[symbol] : '?';
     },
 
-    toBraille: function (text) {
-        text = replaceContractions(text);
-        var upperText, upperTextLength, brailleText, i;
-
-        upperText = text.toUpperCase();
-        upperTextLength = upperText.length;
-        brailleText = '';
-
-        for (i = 0; i < upperTextLength; i++) {
-            var character = upperText[i]
-            brailleText += isConverted(character)
-                ? character
-                : this.convert(character);
-        }
-
-        return brailleText;
-    },
+    toBraille: toBraille,
 
     toText: function (code) {
         var codeLength, asciiText, i;
